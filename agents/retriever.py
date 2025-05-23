@@ -22,7 +22,6 @@ class RetrieverAgent:
     """Agent for retrieving relevant information from documents."""
     
     def __init__(self, data_dir: Optional[str] = None, force_refresh: bool = False):
-        """Initialize the retriever agent."""
         self.vector_store = get_vector_store(data_dir, force_refresh)
         self.llm = AzureChatOpenAI(
             azure_deployment=AZURE_OPENAI_CHAT_DEPLOYMENT,
@@ -36,13 +35,11 @@ class RetrieverAgent:
         self.agent_executor = self._create_agent_executor()
     
     def _create_retriever(self) -> BaseRetriever:
-        """Create the document retriever."""
         return self.vector_store.as_retriever(
             search_kwargs={"k": MAX_RELEVANT_CHUNKS}
         )
     
     def _create_tools(self) -> List[Tool]:
-        """Create the tools for the agent."""
         retriever_tool = create_retriever_tool(
             self.retriever,
             name="document_search",
@@ -52,10 +49,8 @@ class RetrieverAgent:
         return [retriever_tool]
     
     def _create_agent_executor(self) -> AgentExecutor:
-        """Create the agent executor."""
         memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
         
-        # ...existing code...
         retriever_prompt = PromptTemplate.from_template("""
         You are an expert researcher and retriever agent. Your job is to find the most relevant information 
         from a knowledge base to answer user questions or provide context for other tasks.
@@ -77,7 +72,6 @@ class RetrieverAgent:
 
         Let's begin the search process:
         """)
-        # ...existing code...
         
         agent = create_openai_tools_agent(
             self.llm,
