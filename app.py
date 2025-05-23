@@ -11,19 +11,24 @@ create_env_template()
 if "logs" not in st.session_state:
     st.session_state.logs = []
 
-st.title("Agentic RAG System")
+st.title("Multi-Agentic RAG System")
 
 query = st.text_input("Enter your query:", "")
 
 if st.button("Submit"):
     st.session_state.logs.clear()
-    with st.spinner("Initializing retriever agent..."):
-        async def run_query():
+    response_placeholder = st.empty()
+    with st.spinner("Running multi-agent workflow"):
+        async def run_multi_agent_query():
             retriever_agent = RetrieverAgent()
-            generator_agent = GeneratorAgent(retriever_agent)
-            response = await generator_agent.agenerate(query)
+            generator_agent = GeneratorAgent()
+
+            retrieval_result =await retriever_agent.aquery(query)
+            context = retrieval_result.get("output", "")
+            response = await generator_agent.agenerate(f"Context from retriever: \n{context}\n\nUser question: {query}")
             return format_agent_response(response)
-        final_response = asyncio.run(run_query())
+        
+        final_response = asyncio.run(run_multi_agent_query())
     st.success("Response generated!")
     st.write("=== Generated Response ===")
     st.write(final_response)
