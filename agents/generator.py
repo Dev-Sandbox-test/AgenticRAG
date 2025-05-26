@@ -32,7 +32,7 @@ class GeneratorAgent:
         
         generator_prompt = PromptTemplate.from_template("""
         You are an expert content generation assistant.
-        Use the provided context to answer the user's question as accurately as possible.
+        Use ONLY the provided context to answer the user's question as accurately as possible.If the answer is not present in the context, respond with "Data not found"
 
         Chat History: {chat_history}
 
@@ -40,7 +40,7 @@ class GeneratorAgent:
 
         {agent_scratchpad}
 
-        Generate a comprehensive and accurate response, citing sources if available.
+        Generate a comprehensive and accurate response, citing sources if available. Do NOT use any information that is not present in the context.
         """)
         
         agent = create_openai_tools_agent(
